@@ -1,74 +1,87 @@
-import { useState } from "react";
 import NoteContext from "./noteContext";
+import { useState } from "react";
+
 const NoteState = (props) => {
-    const notesInitial = [
-        {
-            "_id": "64573added8a724df8ed1344",
-            "user": "6455db27d19234d3345ac62c",
-            "title": "My Title",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:01.246Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2346",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2347",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2348",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2349",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2350",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-        {
-            "_id": "64573ae0ed8a724df8ed2351",
-            "user": "6455db27d19234d3345bc62c",
-            "title": "My Title 2",
-            "description": "Please access the playlist",
-            "tag": "YouTube",
-            "date": "2023-05-07T05:45:04.338Z",
-            "__v": 0
-        },
-    ]
-    const [notes, setNotes] = useState(notesInitial)
+    const host = "http://localhost:5000"
+    const notesInitial = [];
+    const [notes, setnotes] = useState(notesInitial)
+
+    //Get all Notes
+    const getNotes = async () => {
+        //API Call
+        const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQyYmE3NmQ5MzE4NGYyZGY0Y2Q4ZmUyIn0sImlhdCI6MTY4MDY2NjI3NX0.FSakM5J6zELZ_nPagwoLCMuye-zLwLC6czhGDDu4_uk"
+            }
+        });
+        const json = await response.json();
+        setnotes(json);
+
+    }
+    //Add a Note
+    const addNote = async (title, description, tag) => {
+        //API Call
+        // eslint-disable-next-line
+        const response = await fetch(`${host}/api/notes/addnote`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQyYmE3NmQ5MzE4NGYyZGY0Y2Q4ZmUyIn0sImlhdCI6MTY4MDY2NjI3NX0.FSakM5J6zELZ_nPagwoLCMuye-zLwLC6czhGDDu4_uk"
+            },
+            body: JSON.stringify({ title, description, tag })
+        });
+
+        const note = await response.json();
+        setnotes(notes.concat(note))        
+    }
+
+    //Delete a Note
+    const deleteNote = async (id) => {
+        const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQyYmE3NmQ5MzE4NGYyZGY0Y2Q4ZmUyIn0sImlhdCI6MTY4MDY2NjI3NX0.FSakM5J6zELZ_nPagwoLCMuye-zLwLC6czhGDDu4_uk"
+            }
+        });
+        // eslint-disable-next-line
+        const json = await response.json();
+        //Logic to edit in client
+        const newNotes = notes.filter((note) => { return note._id !== id });
+        setnotes(newNotes);
+    }
+
+    //Edit a Note
+    const editNote = async (id, title, description, tag) => {
+        //API Call
+        const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjQyYmE3NmQ5MzE4NGYyZGY0Y2Q4ZmUyIn0sImlhdCI6MTY4MDY2NjI3NX0.FSakM5J6zELZ_nPagwoLCMuye-zLwLC6czhGDDu4_uk"
+            },
+            body: JSON.stringify({ title, description, tag })
+        });
+        // eslint-disable-next-line
+        const json = response.json();
+
+        let newNotes = JSON.parse(JSON.stringify(notes));
+        //Logic to edit in client
+        for (let index = 0; index < newNotes.length; index++) {
+            const element = newNotes[index];
+            if (element._id === id) {
+                newNotes[index].title = title;
+                newNotes[index].description = description;
+                newNotes[index].tag = tag;
+                break;
+            }
+        }
+        setnotes(newNotes);
+    }
     return (
-        <NoteContext.Provider value={{ notes, setNotes }}>
+        <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes }}>
             {props.children}
         </NoteContext.Provider>
     )
